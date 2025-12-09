@@ -11,7 +11,7 @@ from tf_transformations import quaternion_from_euler
 
 _BLE_SERVICE_UUID = uuid.UUID("69321c59-8017-488e-b5e2-b6d30c834bc5")
 _BLE_CHAR_UUID = uuid.UUID("87bc2dc5-2207-408d-99f6-3d35573c4472")
-_BLE_WRITE_INTERVAL_MS = 50
+_BLE_WRITE_INTERVAL_MS = 20
 
 
 class PicomniRoverROS(Node):
@@ -26,7 +26,7 @@ class PicomniRoverROS(Node):
             _BLE_WRITE_INTERVAL_MS / 1000.0, self._twist_timer_cb
         )
 
-        self._last_twist: Twist | None = None
+        self._last_twist = Twist()
         self._twist_queue: asyncio.Queue[Twist] = asyncio.Queue()
 
     def pose_notify_cb(self, _: BleakGATTCharacteristic, data: bytearray) -> None:
@@ -57,11 +57,10 @@ class PicomniRoverROS(Node):
         self._last_twist = msg
 
     def _twist_timer_cb(self) -> None:
-        if self._last_twist is not None:
-            try:
-                self._twist_queue.put_nowait(self._last_twist)
-            except Exception as e:
-                self.get_logger().error(str(e))
+        try:
+            self._twist_queue.put_nowait(self._last_twist)
+        except Exception as e:
+            self.get_logger().error(str(e))
 
 
 async def rclpy_spin(node: Node) -> None:
