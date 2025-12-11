@@ -11,7 +11,7 @@ from tf_transformations import quaternion_from_euler
 
 _BLE_SERVICE_UUID = uuid.UUID("69321c59-8017-488e-b5e2-b6d30c834bc5")
 _BLE_CHAR_UUID = uuid.UUID("87bc2dc5-2207-408d-99f6-3d35573c4472")
-_BLE_WRITE_INTERVAL_MS = 20
+_BLE_WRITE_INTERVAL_MS = 50
 
 
 class PicomniRoverROS(Node):
